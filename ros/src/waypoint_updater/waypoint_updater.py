@@ -55,12 +55,6 @@ class WaypointUpdater(object):
 	#cur_y = msg.pose.position.y
 	#rospy.loginfo("--------The current position: %f,%f",cur_x,cur_y)
 	
-	
-    def waypoints_cb(self, waypoints):
-        # TODO: Implement
-	# Load the base waypoints once
-	if not self.base_waypoints:
-		self.base_waypoints = waypoints.waypoints
 	# Initialize a distance value
 	closest_dist = 1000000
 	# the first waypoint which is closest to the current position
@@ -70,15 +64,26 @@ class WaypointUpdater(object):
 		if distance < closest_dist:
 			closest_dist = distance
 			self.closest_waypoint_index = i
+	
 	# Create lookahead waypoints from the closest waypoint
-	for i in range(self.closest_waypoint_index, self.closest_waypoint_index + LOOKAHEAD_WPS):
+	lane = Lane()
+	lane.waypoints = self.base_waypoints[self.closest_waypoint_index: self.closest_waypoint_index+ LOOKAHEAD_WPS]
+	
+	
+	'''for i in range(self.closest_waypoint_index, self.closest_waypoint_index + LOOKAHEAD_WPS):
 		index = i % len(self.base_waypoints)
 		lane.waypoints.append(wpt)
-	#lane = Lane()
-	#lane.waypoints = msg.position.x
-	#self.final_waypoints_pub.publish(lane)
+	'''
+	
+	self.final_waypoints_pub.publish(lane)
+	
+    def waypoints_cb(self, waypoints):
+        # TODO: Implement
+	# Load the base waypoints once
+	if not self.base_waypoints:
+		self.base_waypoints = waypoints.waypoints
 
-        pass
+        
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
