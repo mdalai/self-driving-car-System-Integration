@@ -45,6 +45,11 @@ class WaypointUpdater(object):
 	self.closest_waypoint_index = 0
 	
         rospy.spin()
+	
+    # help function for calculating distance between 2 waypoints
+    def calc_distance(self, wp1, wp2):
+	return math.sqrt((wp1.x-wp2.x)**2 + (wp1.y-wp2.y)**2 + (wp1.z-wp2.z)**2)
+	
 
     def pose_cb(self, msg):
         # TODO: Implement
@@ -62,13 +67,16 @@ class WaypointUpdater(object):
 	
 	# Find the waypoint index where the waypoint is closest to the current position
 	# Initialize a distance value
-	closest_dist = 1000000
+	closest_dist = None
 	for i in range(len(self.base_waypoints)):
 		wpt = self.base_waypoints[i].pose.pose.position
-		distance = math.sqrt((wpt.x-self.cur_pos.x)**2 + (wpt.y-self.cur_pos.y)**2 + (wpt.z-self.cur_pos.z)**2)
-		if distance < closest_dist:
-			closest_dist = distance
+		dist = self.calc_distance(wpt, self.cur_pos)
+		if (closest_dist is None) or (dist < closest_dist):
+			closest_dist = dist
 			self.closest_waypoint_index = i
+			
+	# Print out the result
+	rospy.loginfo("The Closest Waypoing index: {}, the distance is: {}.".format(i,closest_dist))
 	
 	# Create lookahead waypoints from the closest waypoint
 	lane = Lane()
