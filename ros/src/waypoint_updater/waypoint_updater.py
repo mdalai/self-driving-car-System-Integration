@@ -62,8 +62,7 @@ class WaypointUpdater(object):
 	
 	# in case the base_waypoints are not loaded yet
 	if not self.base_waypoints:
-		rospy.spin()
-	
+		return	
 	
 	# Find the waypoint index where the waypoint is closest to the current position
 	# Initialize a distance value
@@ -79,7 +78,7 @@ class WaypointUpdater(object):
 	rospy.loginfo("The Closest Waypoing index: {}, the distance is: {}.".format(i,closest_dist))
 	
 	# Create lookahead waypoints from the closest waypoint
-	lane = Lane()
+	lane = Lane()  # create a msg type
 	lane.waypoints = self.base_waypoints[self.closest_waypoint_index: self.closest_waypoint_index+ LOOKAHEAD_WPS]
 	
 	
@@ -96,9 +95,7 @@ class WaypointUpdater(object):
 	if not self.base_waypoints:
 		self.base_waypoints = waypoints.waypoints
 	# Unsubsribe from the topic
-	self.base_waypoints_sub.unregister(self)
-
-        
+	self.base_waypoints_sub.unregister(self)        
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
