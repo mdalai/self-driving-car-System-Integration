@@ -65,7 +65,7 @@ In order to let the car move, we need to provide [throttle,brake,steer] to the c
 - subscribe ``` /vehicle/traffic_lights``` to get the state of lights which are RED, GREEN, YELLOW and UNKNOWN. The corresponding stop line for each traffic light is provided in ``` self.config['stop_line_positions']```.
 - loop through each traffic light. If it is RED light, publish the index of waypoint nearest to the traffic light stop line on the topic ```/traffic_waypoint ```. If it is Not RED light, just publish ```-1``` on the ```/traffic_waypoint ```.
 
-**Note:** instead of pulling the state associate with simulator light data, I should implement traffic light classifier model. Detect the traffic light and its state from the topic ```/image_color ```.  Determine if it is RED or Not RED using the model. I will do this in next.
+_**Note:**_ instead of pulling the state associate with simulator light data, I should implement traffic light classifier model. Detect the traffic light and its state from the topic ```/image_color ```.  Determine if it is RED or Not RED using the model. I will do this in next.
 
 - ```rospy.logwarn()``` is another great tool in ROS for debugging the code. However, remember to turn it off if the code turn out to be correct. These logging did cause latency problem because they consumes computing resources. 
 - check the camera option in the simulator on. Otherwise the  callback function [image_cb] won’t run.
@@ -85,7 +85,7 @@ In order to let the car move, we need to provide [throttle,brake,steer] to the c
   - I tried different ROS frequency, ```rospy.rate(Val) where Val=10,30,50,70```.  Using 70 make the problem worth because it requires more frequent calculation. Well 10 did work well, but it is just too slow. What if something happens within this period of time and we want the car to reactive on time. I adapted 30 in the end. Only because my computer can deal with this value well. 
 
 
-**Notes:**
+_**Notes:**_
 - Adding any function before ```rospy.spin()``` won’t execute. Because it only runs callback function repeatedly.
 - No need to ```catkin_make``` when developing node with python. All we need to do after updating the code is ```roslaunch``` again. 
 - python coding: define a function with parameter be careful with the parameter orders. I encountered this issue when calling the control function. The parameters are in mismatched order. 
