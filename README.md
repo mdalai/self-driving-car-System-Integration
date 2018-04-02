@@ -15,7 +15,7 @@
 
 **Step1: Waypoint Updater Node (partial)**
 
-![alt text][waypoint_updater_1]
+        ![alt text][waypoint_updater_1]
 - waypoint_updater.py
 - subscribe the topics: 
 - ```/base_waypoints```: all waypoints following the highway in the simulator. We can understand it as a Global map in the real world. As soon as the car follows these waypoints, it won’t go off the road. 
