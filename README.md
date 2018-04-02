@@ -107,5 +107,6 @@ _**Notes:**_
 - why waypoints_cb run only at once?
 
 ## Next:
+- Instead of pulling the state associate with simulator light data, I need to implement traffic light classifier model. Detect the traffic light and its state from the topic ```/image_color ``` and PREDICT if it is RED or Not RED using the model. 
 
 ![alt text][tl_detection2]
