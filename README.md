@@ -1,9 +1,21 @@
 # self-driving-car-System-Integration
+- [Udacity CarND System Integration Starter Repo](https://github.com/udacity/CarND-Capstone).
 
 
+[//]: # (Image References)
+[architecture]: ./assets/sdc_architecture.PNG
+[waypoint_updater_1]: ./assets/waypoint_updater_1.PNG
+[dbw]: ./assets/dbw.PNG
+[tl_detection1]: ./assets/tl_detection1.PNG
+[waypoint_updater_2]: ./assets/waypoint_updater_2.PNG
+[tl_detection2]: ./assets/tl_detection2.PNG
 
+
+![alt text][architecture]
 
 **Step1: Waypoint Updater Node (partial)**
+
+![alt text][waypoint_updater_1]
 - waypoint_updater.py
 - subscribe the topics: 
 - ```/base_waypoints```: all waypoints following the highway in the simulator. We can understand it as a Global map in the real world. As soon as the car follows these waypoints, it won’t go off the road. 
@@ -36,6 +48,8 @@ _**Notes for coding:**_
 
 
 **Step2: DBW Node**
+
+![alt text][dbw]
 - In this step, I want to accomplish that the car can follow the green waypoints ahead ignoring the traffic light and obstacles.
 In order to let the car move, we need to provide [throttle,brake,steer] to the car. Each one of them is a topic. What we need to do is, publish the corresponding message on to the topic. For example, to provide [throttle] value to the car we need to publish the value, 0.2 (has to be within [0,1]), on the topic [/vehicle/throttle_cmd]. Let’s add following code into the dbw_node.py:
 ```self.publish(throttle=0.2,brake=0,steer=0)```. We can see the car is start moving now. Great.
@@ -62,6 +76,8 @@ In order to let the car move, we need to provide [throttle,brake,steer] to the c
 
 
 **Step3: Traffic Light Detection**
+
+![alt text][tl_detection1]
 - subscribe ``` /vehicle/traffic_lights``` to get the state of lights which are RED, GREEN, YELLOW and UNKNOWN. The corresponding stop line for each traffic light is provided in ``` self.config['stop_line_positions']```.
 - loop through each traffic light. If it is RED light, publish the index of waypoint nearest to the traffic light stop line on the topic ```/traffic_waypoint ```. If it is Not RED light, just publish ```-1``` on the ```/traffic_waypoint ```.
 
@@ -75,6 +91,8 @@ _**Note:**_ instead of pulling the state associate with simulator light data, I 
 
 
 **Step4: STOP if it is RED light**
+
+![alt text][waypoint_updater_2]
 - subscribe the topic ``` /traffic_waypoint``` and determine if it is the red traffic light.
 - make sure the car can smoothly slowed to full stop at the traffic light. The smooth means acceleration should not exceed 10 m/s^2 and jerk should not exceed 10 m/s^3 according to what we learned from Path Planning project.
 - what we need to do is decelerate waypoint velocities before publishing waypoints to ``` /final_waypoints ```. Updating the value of  ```Twist.pose.position.linear.x``` should slow down the car.
@@ -91,3 +109,6 @@ _**Notes:**_
 - python coding: define a function with parameter be careful with the parameter orders. I encountered this issue when calling the control function. The parameters are in mismatched order. 
 - python coding: defining many variables are cumbersome. You may end up do not know where is the bug. Make sure variables defined with proper name and consistent. 
 - why waypoints_cb run only at once?
+
+
+![alt text][tl_detection2]
