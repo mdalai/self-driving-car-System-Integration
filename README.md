@@ -3,12 +3,12 @@
 
 
 [//]: # (Image References)
-[architecture]: ./assets/sdc_architecture.PNG
-[waypoint_updater_1]: ./assets/waypoint_updater_1.PNG
+[architecture]: ./assets/sdc_architecture.png
+[waypoint_updater_1]: ./assets/waypoint_updater_1.png
 [dbw]: ./assets/dbw.PNG
-[tl_detection1]: ./assets/tl_detection1.PNG
-[waypoint_updater_2]: ./assets/waypoint_updater_2.PNG
-[tl_detection2]: ./assets/tl_detection2.PNG
+[tl_detection1]: ./assets/tl_detection1.png
+[waypoint_updater_2]: ./assets/waypoint_updater_2.png
+[tl_detection2]: ./assets/tl_detection2.png
 
 
 ![alt text][architecture]
