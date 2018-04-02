@@ -26,7 +26,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 
 LOOKAHEAD_WPS = 100 #70 #30 #200 # Number of waypoints we will publish. You can change this number
 MAX_DECEL = 0.5
-ROS_LOOP_RATE = 30 #10,30,50,70 Hz
+ROS_LOOP_RATE = 50 #10,30,50,70 Hz
 PRINT = False #True
 
 class WaypointUpdater(object):
@@ -112,12 +112,7 @@ class WaypointUpdater(object):
         if self.stop_wp_idx == -1 or self.stop_wp_idx >= far_wp_idx:
             lane.waypoints = waypoints_ahead
         else:
-            #rospy.logwarn("MYPRINTING-----Stopping at:{}".format(self.stop_wp_idx))
             lane.waypoints = self.decelerate_waypoints(waypoints_ahead, close_wp_idx)
-            
-            #for i in range(len(waypoints_ahead)):
-            #    self.set_waypoint_velocity(waypoints_ahead,i,0)
-            #lane.waypoints = waypoints_ahead
         
         return lane
     
@@ -127,15 +122,14 @@ class WaypointUpdater(object):
         for i,wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
-            
-            stop_wp_idx = max(self.stop_wp_idx - close_wp_idx -2, 0)
+
+            '''stop_wp_idx = max(self.stop_wp_idx - close_wp_idx -2, 0)
             dist = self.distance(waypoints, i, stop_wp_idx)
             vel = math.sqrt(2 * MAX_DECEL * dist)
             if vel < 1.0:
                 vel = 0
-            p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
-            
-            #p.twist.twist.linear.x = 0.
+            p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x) '''
+            p.twist.twist.linear.x = 0
             temp.append(p)
 
         return temp
