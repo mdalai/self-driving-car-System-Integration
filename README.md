@@ -5,7 +5,7 @@
 [//]: # (Image References)
 [architecture]: ./assets/sdc_architecture.png
 [waypoint_updater_1]: ./assets/waypoint_updater_1.png
-[dbw]: ./assets/dbw.PNG
+[dbw]: ./assets/dbw.png
 [tl_detection1]: ./assets/tl_detection1.png
 [waypoint_updater_2]: ./assets/waypoint_updater_2.png
 [tl_detection2]: ./assets/tl_detection2.png
@@ -13,9 +13,8 @@
 
 ![alt text][architecture]
 
-**Step1: Waypoint Updater Node (partial)**
-
-        ![alt text][waypoint_updater_1]
+## Step1: Waypoint Updater Node (partial)
+![alt text][waypoint_updater_1]
 - waypoint_updater.py
 - subscribe the topics: 
 - ```/base_waypoints```: all waypoints following the highway in the simulator. We can understand it as a Global map in the real world. As soon as the car follows these waypoints, it won’t go off the road. 
@@ -47,8 +46,7 @@ _**Notes for coding:**_
 - another option to check if msg are published successfully to the topic: /final_waypoints. If the msg is published successfully, We should see the green waypoints ahead of the car. In the beginning, there was latency. The waypoints are not able to update on time. I removed the roslog.info. It helped a lot.
 
 
-**Step2: DBW Node**
-
+## Step2: DBW Node
 ![alt text][dbw]
 - In this step, I want to accomplish that the car can follow the green waypoints ahead ignoring the traffic light and obstacles.
 In order to let the car move, we need to provide [throttle,brake,steer] to the car. Each one of them is a topic. What we need to do is, publish the corresponding message on to the topic. For example, to provide [throttle] value to the car we need to publish the value, 0.2 (has to be within [0,1]), on the topic [/vehicle/throttle_cmd]. Let’s add following code into the dbw_node.py:
@@ -75,8 +73,7 @@ In order to let the car move, we need to provide [throttle,brake,steer] to the c
   - the green waypoints ahead of car are not falling behind anymore.
 
 
-**Step3: Traffic Light Detection**
-
+## Step3: Traffic Light Detection
 ![alt text][tl_detection1]
 - subscribe ``` /vehicle/traffic_lights``` to get the state of lights which are RED, GREEN, YELLOW and UNKNOWN. The corresponding stop line for each traffic light is provided in ``` self.config['stop_line_positions']```.
 - loop through each traffic light. If it is RED light, publish the index of waypoint nearest to the traffic light stop line on the topic ```/traffic_waypoint ```. If it is Not RED light, just publish ```-1``` on the ```/traffic_waypoint ```.
@@ -90,8 +87,7 @@ _**Note:**_ instead of pulling the state associate with simulator light data, I 
 
 
 
-**Step4: STOP if it is RED light**
-
+## Step4: STOP if it is RED light
 ![alt text][waypoint_updater_2]
 - subscribe the topic ``` /traffic_waypoint``` and determine if it is the red traffic light.
 - make sure the car can smoothly slowed to full stop at the traffic light. The smooth means acceleration should not exceed 10 m/s^2 and jerk should not exceed 10 m/s^3 according to what we learned from Path Planning project.
@@ -110,5 +106,6 @@ _**Notes:**_
 - python coding: defining many variables are cumbersome. You may end up do not know where is the bug. Make sure variables defined with proper name and consistent. 
 - why waypoints_cb run only at once?
 
+## Next:
 
 ![alt text][tl_detection2]
