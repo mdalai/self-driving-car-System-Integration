@@ -2,9 +2,11 @@
 r"""Convert raw PASCAL dataset to TFRecord for object_detection.
 Example usage:
     python object_detection/dataset_tools/create_labelimg_tf_record.py \
+        --data_dir=/home/user/data \
         --img_dir=/home/user/data/imgs \
         --annotations_dir=/home/user/data/labels \
-        --output_path=/home/user/pascal.record
+        --output_path=/home/user/data/pascal.record \
+        --label_map_path= /home/user/data/pascal_label_map.pbtxt
 """
 
 from __future__ import absolute_import
@@ -25,12 +27,11 @@ from object_detection.utils import label_map_util
 
 
 flags = tf.app.flags
-flags.DEFINE_string('img_dir', '', 'Root directory to raw PASCAL VOC dataset.')
-flags.DEFINE_string('annotations_dir', 'Annotations',
-                    '(Relative) path to annotations directory.')
+flags.DEFINE_string('data_dir', '', 'Root directory to the dataset.')
+flags.DEFINE_string('img_dir', '', 'Directory stores image dataset.')
+flags.DEFINE_string('annotations_dir', 'Annotations', '(Relative) path to annotations directory.')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-flags.DEFINE_string('label_map_path', 'data/pascal_label_map.pbtxt',
-                    'Path to label map proto')
+flags.DEFINE_string('label_map_path', '', 'Path to label map proto')
 FLAGS = flags.FLAGS
 
 def dict_to_tf_example(data,
@@ -55,7 +56,7 @@ def dict_to_tf_example(data,
   Raises:
     ValueError: if the image pointed to by data['filename'] is not a valid JPEG
   """
-  img_path = os.path.join(data['folder'], image_subdirectory, data['filename'])
+  img_path = os.path.join(data['folder'], data['filename'])
   full_path = os.path.join(dataset_directory, img_path)
   with tf.gfile.GFile(full_path, 'rb') as fid:
     encoded_jpg = fid.read()
@@ -118,22 +119,23 @@ return example
 
 
 def main(_):
+  data_dir = FLAGS.data_dir
   img_dir = FLAGS.img_dir
   label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
   annotations_dir = FLAGS.annotations_dir
   
   writer = tf.python_io.TFRecordWriter(FLAGS.output_path)  
-  #examples_list = dataset_util.read_examples_list(examples_path)
+
   for idx, xmlfile in enumerate(os.listdir(annotations_dir)):
     if idx % 50 == 0:
-      logging.info('On image %d of %d', idx, len(examples_list))
+      logging.info('On image %d of %d', idx, len(os.listdir(annotations_dir)))
     path = os.path.join(annotations_dir, xmlfile)
     with tf.gfile.GFile(path, 'r') as fid:
       xml_str = fid.read()
     xml = etree.fromstring(xml_str)
     data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
-    tf_example = dict_to_tf_example(data, FLAGS.img_dir, label_map_dict)
+    tf_example = dict_to_tf_example(data, FLAGS.data_dir, label_map_dict)
     writer.write(tf_example.SerializeToString())
 
   writer.close()
