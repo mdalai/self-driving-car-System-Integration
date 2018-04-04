@@ -1,3 +1,11 @@
+r"""Convert raw BOSCH dataset to TFRecord for object_detection.
+Example usage:
+    python object_detection/dataset_tools/create_bosch_tf_record.py \
+        --yaml_path=data/test-bosch/dataset_test_rgb/test.yaml \
+        --output_path=/home/user/data/pascal.record \
+        --label_map_path= /home/user/data/pascal_label_map.pbtxt
+"""
+
 """
 #INPUT_YAML = "data/test-bosch/dataset_test_rgb/test.yaml"
 """
@@ -86,8 +94,7 @@ def main(_):
     
     writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
     
-    # BOSCH
-    
+    # BOSCH    
     yaml_path = FLAGS.yaml_path
     examples = yaml.load(open(yaml_path, 'rb').read())
 
