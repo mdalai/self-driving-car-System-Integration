@@ -43,10 +43,10 @@ def main(_):
   label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
   annotations_dir = FLAGS.annotations_dir
   #examples_list = dataset_util.read_examples_list(examples_path)
-  for idx, example in enumerate(examples_list):
-    if idx % 30 == 0:
+  for idx, xmlfile in enumerate(os.listdir(annotations_dir)):
+    if idx % 50 == 0:
       logging.info('On image %d of %d', idx, len(examples_list))
-    path = os.path.join(annotations_dir, example + '.xml')
+    path = os.path.join(annotations_dir, xmlfile)
     with tf.gfile.GFile(path, 'r') as fid:
       xml_str = fid.read()
     xml = etree.fromstring(xml_str)
