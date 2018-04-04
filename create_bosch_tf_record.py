@@ -1,9 +1,15 @@
+"""
+#INPUT_YAML = "data/test-bosch/dataset_test_rgb/test.yaml"
+"""
+
+
 import tensorflow as tf
 import yaml
 import os
 from object_detection.utils import dataset_util
 
 flags = tf.app.flags
+flags.DEFINE_string('yaml_path', '', 'Path to YAML file in the dataset')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
 FLAGS = flags.FLAGS
 
@@ -81,15 +87,16 @@ def main(_):
     writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
     
     # BOSCH
-    INPUT_YAML = "data/test-bosch/dataset_test_rgb/test.yaml"
-    examples = yaml.load(open(INPUT_YAML, 'rb').read())
+    
+    yaml_path = FLAGS.yaml_path
+    examples = yaml.load(open(yaml_path, 'rb').read())
 
     #examples = examples[:10]  # for testing
     len_examples = len(examples)
     print("Loaded ", len(examples), "examples")
 
     for i in range(len(examples)):
-        examples[i]['path'] = os.path.abspath(os.path.join(os.path.dirname(INPUT_YAML), examples[i]['path']))
+        examples[i]['path'] = os.path.abspath(os.path.join(os.path.dirname(yaml_path), examples[i]['path']))
     
     counter = 0
     for example in examples:
