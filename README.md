@@ -176,8 +176,7 @@ item {
   id: 3
   name: 'green'
 }
-
-```
+```.
 
 Let’s run:
 ```
@@ -210,7 +209,8 @@ Open the config file:
 
 Train the model:
 ```
-python train.py --logtostderr --train_dir=./models/train1 --pipeline_config_path=ssd_mobilenet_v1_coco.config
+python train.py --logtostderr --train_dir=./models/train1 
+    --pipeline_config_path=ssd_mobilenet_v1_coco.config
 ```
 
 ### Saving the model ###
@@ -218,7 +218,10 @@ Saving a checkpoint model (.ckpt) as a .pb file.
 - copy the ```export_inference_graph.py``` file into the folder containing your model config file.
 - run following command to generate the model named frozen_inference_graph.pb in a new directory fine_tuned_model:
 ```
-python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./ssd_mobilenet_v1_coco.config --trained_checkpoint_prefix ./models/train1/model.ckpt-68 --output_directory ./fine_tuned_model1
+python export_inference_graph.py --input_type image_tensor 
+    --pipeline_config_path ./ssd_mobilenet_v1_coco.config 
+    --trained_checkpoint_prefix ./models/train1/model.ckpt-68 
+    --output_directory ./fine_tuned_model1
 ```
 
 ### Testing the model ###
@@ -297,10 +300,10 @@ Not bad. Let’s deploy it to the ROS and see if the car can drive well in the s
 - [Step by Step TensorFlow Object Detection API Tutorial — Part 3: Creating Your Own Dataset](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-3-creating-your-own-dataset-6369a4d30dfd) 
 - [Step by Step TensorFlow Object Detection API Tutorial — Part 4: Training the Model](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-4-training-the-model-68a9e5d5a333)
 - [Step by Step TensorFlow Object Detection API Tutorial — Part 5: Saving and Deploying a Model](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-5-saving-and-deploying-a-model-8d51f56dbcf1)
-- [Pascal VOC] (http://host.robots.ox.ac.uk/pascal/VOC/ )
+- [Pascal VOC](http://host.robots.ox.ac.uk/pascal/VOC/ )
 - [TFRecords guide](http://warmspringwinds.github.io/tensorflow/tf-slim/2016/12/21/tfrecords-guide/ )
 - [TensorFlow Object Detection API in 5 clicks from Colaboratory](https://medium.com/@nickbortolotti/tensorflow-object-detection-api-in-5-clicks-from-colaboratory-843b19a1edf1)
-- How to train your own Object Detector with TensorFlow’s Object Detector API ](https://towardsdatascience.com/how-to-train-your-own-object-detector-with-tensorflows-object-detector-api-bec72ecfe1d9 )
+- [How to train your own Object Detector with TensorFlow’s Object Detector API ](https://towardsdatascience.com/how-to-train-your-own-object-detector-with-tensorflows-object-detector-api-bec72ecfe1d9 )
 - [Self Driving Vehicles: Traffic Light Detection and Classification with TensorFlow Object Detection API](https://becominghuman.ai/traffic-light-detection-tensorflow-api-c75fdbadac62)
 
 
