@@ -238,7 +238,7 @@ If I use original Mobilinet model to predict the same test image, I will get fol
 ![alt text](1try-mobinet)
 ![alt text](./assets/1try-mobinet.png =100x100)
 
-<img src=1try-mobinet alt="Drawing" style="width: 200px; height: 100px;"/>
+<img src=[1try-mobinet] alt="Drawing" style="width: 200px; height: 100px;"/>
 
 Obviously something is wrong. But this is a good start. In next, I need try following things: - Need to check my TF Records file.  I am wondering if something is wrong on the conversion from PASCAL xml file to TF records file. 
 - Need to check the TF Object Detection API config file. 
