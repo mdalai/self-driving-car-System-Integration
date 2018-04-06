@@ -287,7 +287,12 @@ Test results for the case with 3 classes (red,green,yellow):
 
 Test results for the case with 2 classes (red,notred):
 
-~~~~~~~~~~~~~~~~
+<p float="left">
+    <img src="./assets/3try-red-miss1.png" alt="Drawing" width="200" height="150"/>
+    <img src="./assets/3try-red.png" alt="Drawing" width="200" height="150"/>
+    <img src="./assets/3try-notred2.png" alt="Drawing" width="200" height="150"/>
+    <img src="./assets/3try-notred1.png" alt="Drawing" width="200" height="150"/>
+</p>
 
 Not bad. Let’s deploy it to the ROS and see if the car can drive well in the simulator.
 
