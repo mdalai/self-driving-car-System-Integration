@@ -279,7 +279,10 @@ INFO:tensorflow:global step 95: loss = 3.4559 (8.421 sec/step)
 
 Test results for the case with 3 classes (red,green,yellow):
 
-~~~~~~~~~~~~~~~~
+<img src="./assets/2try-green.png" alt="Drawing" width="350" height="250"/>
+<img src="./assets/2try-red-miss1.png" alt="Drawing" width="350" height="250"/>
+<img src="./assets/2try-red.png" alt="Drawing" width="350" height="250"/>
+<img src="./assets/2try-yellow.png" alt="Drawing" width="350" height="250"/>
 
 Test results for the case with 2 classes (red,notred):
 
