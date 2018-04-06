@@ -230,7 +230,7 @@ python export_inference_graph.py --input_type image_tensor
 ```
 
 ### Testing the model ###
-The result is terrible (see below), of course. 
+The result is terrible (see below), of course:
 ![alt text][1try-messy]
 
 If I use original Mobilinet model to predict the same test image, I will get following nice predictions:
