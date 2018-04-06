@@ -10,11 +10,6 @@
 [waypoint_updater_2]: ./assets/waypoint_updater_2.png
 [tl_detection2]: ./assets/tl_detection2.png
 
-[1try-messy]: ./assets/1try-messy.png
-[1try-mobinet]: ./assets/1try-mobinet.png
-
-
-
 
 ![alt text][architecture]
 
@@ -231,12 +226,12 @@ python export_inference_graph.py --input_type image_tensor
 
 ### Testing the model ###
 The result is terrible (see below), of course:
-![alt text][1try-messy]
+
+<img src="./assets/1try-messy.png" alt="Drawing" width="350" height="250"/>
 
 If I use original Mobilinet model to predict the same test image, I will get following nice predictions:
 
-<img src="./assets/1try-mobinet.png" alt="Drawing" style="width: 200px; height: 100px;"/>
-<img src="./assets/1try-mobinet.png" alt="Drawing" width="200" height="100px"/>
+<img src="./assets/1try-mobinet.png" alt="Drawing" width="350" height="250"/>
 
 Obviously something is wrong. But this is a good start. In next, I need try following things: - Need to check my TF Records file.  I am wondering if something is wrong on the conversion from PASCAL xml file to TF records file. 
 - Need to check the TF Object Detection API config file. 
