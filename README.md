@@ -236,6 +236,7 @@ The result is terrible (see below), of course:
 If I use original Mobilinet model to predict the same test image, I will get following nice predictions:
 
 ![alt text](1try-mobinet =100x100)
+![alt text](./assets/1try-mobinet.png =100x100)
 
 Obviously something is wrong. But this is a good start. In next, I need try following things: - Need to check my TF Records file.  I am wondering if something is wrong on the conversion from PASCAL xml file to TF records file. 
 - Need to check the TF Object Detection API config file. 
