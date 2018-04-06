@@ -248,10 +248,6 @@ I tried following work:
 It did work on AWS. I got following training results for the case with 3 classes (red,green,yellow):
 
 ```
-INFO:tensorflow:global step 83: loss = 3.7748 (11.255 sec/step)
-INFO:tensorflow:global step 83: loss = 3.7748 (11.255 sec/step)
-INFO:tensorflow:global step 84: loss = 3.4207 (8.379 sec/step)
-INFO:tensorflow:global step 84: loss = 3.4207 (8.379 sec/step)
 INFO:tensorflow:global step 85: loss = 2.6950 (8.345 sec/step)
 INFO:tensorflow:global step 85: loss = 2.6950 (8.345 sec/step)
 INFO:tensorflow:global step 86: loss = 3.5934 (8.439 sec/step)
@@ -263,10 +259,6 @@ INFO:tensorflow:global step 87: loss = 3.4470 (8.369 sec/step)
 I got following training results for the case with 2 classes (red,notred):
 
 ```
-INFO:tensorflow:global step 91: loss = 2.5754 (8.383 sec/step)
-INFO:tensorflow:global step 91: loss = 2.5754 (8.383 sec/step)
-INFO:tensorflow:global step 92: loss = 2.6952 (8.381 sec/step)
-INFO:tensorflow:global step 92: loss = 2.6952 (8.381 sec/step)
 INFO:tensorflow:global step 93: loss = 3.3248 (8.385 sec/step)
 INFO:tensorflow:global step 93: loss = 3.3248 (8.385 sec/step)
 INFO:tensorflow:global step 94: loss = 2.8824 (8.384 sec/step)
