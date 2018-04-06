@@ -13,6 +13,8 @@
 
 ![alt text][architecture]
 
+# PART1: ROS Setup
+
 ## Step1: Waypoint Updater Node (partial)
 ![alt text][waypoint_updater_1]
 - waypoint_updater.py
@@ -106,7 +108,205 @@ _**Notes:**_
 - python coding: defining many variables are cumbersome. You may end up do not know where is the bug. Make sure variables defined with proper name and consistent. 
 - why waypoints_cb run only at once?
 
-## Next:
+# PART2: Model Training
 - Instead of pulling the state associate with simulator light data, I need to implement traffic light classifier model. Detect the traffic light and its state from the topic ```/image_color ``` and PREDICT if it is RED or Not RED using the model. 
 
 ![alt text][tl_detection2]
+
+### Setup TF Object Detection API ###
+``` git clone https://github.com/tensorflow/models.git ```
+
+Follow the [installation guide](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md ) and make sure ```python object_detection/builders/model_builder_test.py ``` works in the end.
+
+### Selecting a model ###
+To select a proper model, following criteria are considered:
+- The first thing in my mind is it has to be fast. Obviously, we do not want our car to wondering around to wait for the result if it is RED light or not.
+- I do not have enough time to collect and pre-process data training the model. So I need to adapt Transfer Learning. 
+
+To meet the above request, I decided to use SSD (Single Shot Detection) model.
+**SSD** does following two things in one shot:
+- Train a Region Proposal Network (RPN) which decides which regions of the image are worth drawing a box around.
+- RPN is then merged with a pretrained model for classification. The classifier only works in the region.
+
+- There are two SSD options in the [Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md ).  We can USE these pretrained models by following code:
+```
+# Frozen inference graph files. NOTE: change the path to where you saved the models.
+SSD1= 'ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb'
+SSD2 = 'ssd_inception_v2_coco_2017_11_17/frozen_inference_graph.pb'
+```
+
+- Training SSD model is cumbersome process. We have to provide following two info in each training data (image). In this process a lot of manual hand work is involved. 
+    - 4 corner bounding box locations (cx, cy, w, h).
+    - C class probabilities (1, 0). 1:RED, 0:Not RED.
+
+- Feature map is used to predict bounding boxes. 
+
+
+### Preprocessing the data ###
+#### Gather data ####
+I have used the data from @olegleyz. This has saved me a lot of time just collecting data. Thanks @olegleyz. Following datasets are used to train the model:
+- Simulator images
+- Real site images from rosbag
+- Bosch Small Traffic Lights Dataset.
+
+#### Label and annotate the images ####
+To train SSD model, we need to manually process each image data providing the bounding box and classification info.  [LabelImg](https://github.com/tzutalin/labelImg ) is a great free tool to annotate the images. This tool will generate annotation files in same format as Pascal VOC(http://host.robots.ox.ac.uk/pascal/VOC/ ) dataset. 
+
+I have training dataset:
+```
+
+```
+
+#### Generate TFRecords file ####
+In order to fine tune the SSD model, we have to feed the model with TFRecord training data. The reason we are putting image and annotation in one huge binary file is that it is efficient to read. It is time-consuming to read image and annotation file separately (check out this blog if you interested in detail). 
+
+In this step, we need to convert  PascalVOC files into TFRecord file. I prepared a python code ```create_labelimg_tf_record.py``` based on the [create_pascal_tf_record.py](https://github.com/tensorflow/models/blob/master/research/object_detection/dataset_tools/create_pascal_tf_record.py ) provided in the TF Model repo. 
+
+Need to create a label map file, ``` sim_label_map.pbtxt ```containing following info:
+```
+item {
+  id: 1
+  name: 'red'
+}
+item {
+  id: 2
+  name: 'yellow'
+}
+item {
+  id: 3
+  name: 'green'
+}
+
+```
+
+Let’s run:
+```
+python create_labelimg_tf_record.py \
+        --data_dir=./  \
+        --img_dir=sim \
+        --annotations_dir=label \
+        --output_path=pascal2.record \
+        --label_map_path=sim_label_map2.pbtxt
+
+```
+
+If above code gives an NOT FOUND type error, make sure following code is executed in the TF Models/research folder:
+ ``` export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim```
+
+We will train the model in the next step.
+
+### Training the model ###
+Create new Folder ```mymodels```.
+Copy the config file under [object_detection/samples/configs](https://github.com/tensorflow/models/tree/master/research/object_detection/samples/configs)  into this folder.
+Create new folder named ```data``` and move the TF Record file and label_map file into this folder.
+Create another folder named ```models``` and move the downloaded model folder 3 ckpt files into here.
+
+Open the config file:
+- Change the number of classes = 3
+- change following: ```fine_tune_checkpoint: "models/model.ckpt"```
+- num_steps: ``` 20 ```
+- input_path: ``` data/pascal.record  ```.
+- label_map_path: ``` data/sim_label_map.pbtxt ```.
+
+Train the model:
+```
+python train.py --logtostderr --train_dir=./models/train1 --pipeline_config_path=ssd_mobilenet_v1_coco.config
+```
+
+### Saving the model ###
+Saving a checkpoint model (.ckpt) as a .pb file.
+- copy the ```export_inference_graph.py``` file into the folder containing your model config file.
+- run following command to generate the model named frozen_inference_graph.pb in a new directory fine_tuned_model:
+```
+python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./ssd_mobilenet_v1_coco.config --trained_checkpoint_prefix ./models/train1/model.ckpt-68 --output_directory ./fine_tuned_model1
+```
+
+### Testing the model ###
+The result is terrible (see below), of course. 
+~~~~~~~~~~
+
+If I use original Mobilinet model to predict the same test image, I will get following nice predictions:
+~~~~~~~~~~
+
+Obviously something is wrong. But this is a good start. In next, I need try following things: - Need to check my TF Records file.  I am wondering if something is wrong on the conversion from PASCAL xml file to TF records file. 
+- Need to check the TF Object Detection API config file. 
+
+### Optimization Loop ###
+I tried following work:
+- Understand the TF records file. Compare the tf record file size with the original images. Make sure the step of generating record file is correct.
+- Understand the TF Object Detection API config file. Make sure my config file for fine tuning the model is correct.
+- Added another case: classifying only Red and NotRed. 
+- Ran the training again in my Linux machine (4G RAM). It finished after a little while. I am not expecting it to finish in short time. Something is wrong. Probably I don’t have enough memory. Let’s move to AWS next.
+
+**Training on AWS**  
+
+It did work on AWS. I got following training results for the case with 3 classes (red,green,yellow):
+
+```
+INFO:tensorflow:global step 83: loss = 3.7748 (11.255 sec/step)
+INFO:tensorflow:global step 83: loss = 3.7748 (11.255 sec/step)
+INFO:tensorflow:global step 84: loss = 3.4207 (8.379 sec/step)
+INFO:tensorflow:global step 84: loss = 3.4207 (8.379 sec/step)
+INFO:tensorflow:global step 85: loss = 2.6950 (8.345 sec/step)
+INFO:tensorflow:global step 85: loss = 2.6950 (8.345 sec/step)
+INFO:tensorflow:global step 86: loss = 3.5934 (8.439 sec/step)
+INFO:tensorflow:global step 86: loss = 3.5934 (8.439 sec/step)
+INFO:tensorflow:global step 87: loss = 3.4470 (8.369 sec/step)
+INFO:tensorflow:global step 87: loss = 3.4470 (8.369 sec/step)
+```
+
+I got following training results for the case with 2 classes (red,notred):
+
+```
+INFO:tensorflow:global step 91: loss = 2.5754 (8.383 sec/step)
+INFO:tensorflow:global step 91: loss = 2.5754 (8.383 sec/step)
+INFO:tensorflow:global step 92: loss = 2.6952 (8.381 sec/step)
+INFO:tensorflow:global step 92: loss = 2.6952 (8.381 sec/step)
+INFO:tensorflow:global step 93: loss = 3.3248 (8.385 sec/step)
+INFO:tensorflow:global step 93: loss = 3.3248 (8.385 sec/step)
+INFO:tensorflow:global step 94: loss = 2.8824 (8.384 sec/step)
+INFO:tensorflow:global step 94: loss = 2.8824 (8.384 sec/step)
+INFO:tensorflow:global step 95: loss = 3.4559 (8.421 sec/step)
+INFO:tensorflow:global step 95: loss = 3.4559 (8.421 sec/step)
+```
+
+**Export and test the results**
+
+Test results for the case with 3 classes (red,green,yellow):
+
+~~~~~~~~~~~~~~~~
+
+Test results for the case with 2 classes (red,notred):
+
+~~~~~~~~~~~~~~~~
+
+Not bad. Let’s deploy it to the ROS and see if the car can drive well in the simulator.
+
+### Deploying the model ###
+
+
+
+
+
+
+## References ##
+- [Tensorflow Models](https://github.com/tensorflow/models )
+- [Udacity Object Detection Lab](https://github.com/udacity/CarND-Object-Detection-Lab )
+- [Step by Step TensorFlow Object Detection API Tutorial — Part 1: Selecting a Model](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e)
+- [Step by Step TensorFlow Object Detection API Tutorial — Part 2: Converting Existing Dataset to TFRecord](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-2-converting-dataset-to-tfrecord-47f24be9248d)
+- [Step by Step TensorFlow Object Detection API Tutorial — Part 3: Creating Your Own Dataset](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-3-creating-your-own-dataset-6369a4d30dfd) 
+- [Step by Step TensorFlow Object Detection API Tutorial — Part 4: Training the Model](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-4-training-the-model-68a9e5d5a333)
+- [Step by Step TensorFlow Object Detection API Tutorial — Part 5: Saving and Deploying a Model](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-5-saving-and-deploying-a-model-8d51f56dbcf1)
+- [Pascal VOC] (http://host.robots.ox.ac.uk/pascal/VOC/ )
+- [TFRecords guide](http://warmspringwinds.github.io/tensorflow/tf-slim/2016/12/21/tfrecords-guide/ )
+- [TensorFlow Object Detection API in 5 clicks from Colaboratory](https://medium.com/@nickbortolotti/tensorflow-object-detection-api-in-5-clicks-from-colaboratory-843b19a1edf1)
+- How to train your own Object Detector with TensorFlow’s Object Detector API ](https://towardsdatascience.com/how-to-train-your-own-object-detector-with-tensorflows-object-detector-api-bec72ecfe1d9 )
+- [Self Driving Vehicles: Traffic Light Detection and Classification with TensorFlow Object Detection API](https://becominghuman.ai/traffic-light-detection-tensorflow-api-c75fdbadac62)
+
+
+## Next ##
+- Use Udacity Driving dataset to train the model: https://github.com/udacity/self-driving-car/tree/master/annotations 
+- Try classifying the entire image and see what is the result. Please refer to this repo: https://github.com/olegleyz/traffic-light-classification 
+- Building a Toy Detector with Tensorflow Object Detection API
+- How to play Quidditch using the TensorFlow Object Detection API
+
