@@ -150,7 +150,7 @@ I have used the data from @olegleyz. This has saved me a lot of time just collec
 - Bosch Small Traffic Lights Dataset.
 
 #### Label and annotate the images ####
-To train SSD model, we need to manually process each image data providing the bounding box and classification info.  [LabelImg](https://github.com/tzutalin/labelImg ) is a great free tool to annotate the images. This tool will generate annotation files in same format as Pascal VOC(http://host.robots.ox.ac.uk/pascal/VOC/ ) dataset. 
+To train SSD model, we need to manually process each image data providing the bounding box and classification info.  [LabelImg](https://github.com/tzutalin/labelImg ) is a great free tool to annotate the images. This tool will generate annotation files in same format as [Pascal VOC](http://host.robots.ox.ac.uk/pascal/VOC/ ) dataset. 
 
 I have training dataset:
 ```
@@ -176,7 +176,7 @@ item {
   id: 3
   name: 'green'
 }
-```.
+```
 
 Let’s run:
 ```
