@@ -290,7 +290,15 @@ Not bad. Let’s deploy it to the ROS and see if the car can drive well in the s
 
 ### Deploying the model ###
 
-
+- The fine tuned model has to be exported with TF1.4. Otherwise it throws an error. I trained the model on TF1.7. Then I create a Conda Env that has TF1.4. I exported the .pb file using this Conda Env. 
+- DO Not use Utils from TF Object Detection API. These helper files won’t import in ROS environment. Hardcode the helper function that are required in the ```tl_classifier.py```.
+- The .pb file and .pbtxt file path has to be absolute path in the ```tl_classifier.py```. DO NOT use relative path.
+- Parameters adjustment. Following param adjustment worked on my machine.
+    ```
+    LOOKAHEAD_WPS = 30  
+    ROS_LOOP_RATE = 5
+    ``` 
+- see errors I encountered and solution in [debugging.md](https://github.com/mdalai/self-driving-car-System-Integration/blob/master/debugging.md).
 
 
 
