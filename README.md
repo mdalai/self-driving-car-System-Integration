@@ -154,7 +154,7 @@ To train SSD model, we need to manually process each image data providing the bo
 
 I have training dataset:
 ```
-
+Red:133, Green:59, Yellow:44
 ```
 
 #### Generate TFRecords file ####
