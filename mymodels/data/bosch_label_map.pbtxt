@@ -1,0 +1,69 @@
+item {
+  id: 1
+  name: 'off'
+}
+
+item {
+  id: 2
+  name: 'Red'
+}
+
+item {
+  id: 3
+  name: 'Yellow'
+}
+
+item {
+  id: 4
+  name: 'Green'
+}
+
+item {
+  id: 5
+  name: 'GreenRight'
+}
+
+item {
+  id: 6
+  name: 'RedLeft'
+}
+
+item {
+  id: 7
+  name: 'RedStraight'
+}
+
+item {
+  id: 8
+  name: 'GreenStraightLeft'
+}
+
+item {
+  id: 9
+  name: 'occluded'
+}
+
+item {
+  id: 10
+  name: 'GreenStraightRight'
+}
+
+item {
+  id: 11
+  name: 'RedRight'
+}
+
+item {
+  id: 12
+  name: 'GreenLeft'
+}
+
+item {
+  id: 13
+  name: 'GreenStraight'
+}
+
+item {
+  id: 14
+  name: 'RedStraightLeft'
+}
