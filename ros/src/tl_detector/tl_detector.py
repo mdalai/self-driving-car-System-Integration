@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import Int32
+from std_msgs.msg import Int32, String
 from geometry_msgs.msg import PoseStamped, Pose
 from styx_msgs.msg import TrafficLightArray, TrafficLight
 from styx_msgs.msg import Lane
@@ -41,6 +41,8 @@ class TLDetector(object):
         self.config = yaml.load(config_string)
 
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
+        # Publish the light state
+        #self.light_state_pub = rospy.Publisher('/traffic_light_state',Int32, queue_size=1)
 
         self.bridge = CvBridge()
         self.light_classifier = TLClassifier()
@@ -168,8 +170,9 @@ class TLDetector(object):
 
         if light:
             state = self.get_light_state(light)
-            # checkingi
-            #rospy.logwarn("MYPRINTING-----State:{}".format(state))
+            # checking
+            if state == TrafficLight.RED:
+                rospy.logwarn("MYPRINTING-----State:{} RED".format(state))
              
             return light_wp, state
 

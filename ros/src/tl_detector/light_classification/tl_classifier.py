@@ -6,29 +6,33 @@ import sys
 import tensorflow as tf
 from collections import defaultdict
 from io import StringIO
-from utils import label_map_util
-from utils import visualization_utils as vis_util
 import time
+
+
+RED = TrafficLight.RED
+GREEN = TrafficLight.GREEN
+YELLOW = TrafficLight.YELLOW
+UNKNOWN = TrafficLight.UNKNOWN
 
 class TLClassifier(object):
     def __init__(self):
         #TODO load classifier
-        RED = TrafficLight.RED
-		GREEN = TrafficLight.GREEN
-		YELLOW = TrafficLight.YELLOW
-		UNKNOWN = TrafficLight.UNKNOWN
-
-		self.image_np = None
+        
+        # get the real path dir, otherwise it won't find the pb file
+        pwd = os.path.dirname(os.path.realpath(__file__))
+        PATH_TO_MODEL = os.path.join(pwd,'frozen_inference_graph2.pb')
+        PATH_TO_LABELS = os.path.join(pwd,'sim_label_map.pbtxt')
+        NUM_CLASSES = 3
+		
+        self.image_np = None
         
         # Loading the lable map
-        label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-        categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
-        self.category_index = label_map_util.create_category_index(categories)
+        self.category_index = {1: {'id':1, 'name': u'red'}, 2: {'id':2, 'name': u'yellow'}, 3: {'id':3, 'name': u'green'} }
         
         # load a FROZEN TF model into memory        
         self.detection_graph = tf.Graph()
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
+        #config = tf.ConfigProto()
+        #config.gpu_options.allow_growth = True
         
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()
@@ -42,20 +46,20 @@ class TLClassifier(object):
             self.d_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
             self.d_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
             self.num_d = self.detection_graph.get_tensor_by_name('num_detections:0')
-        #self.sess = tf.Session(graph=self.detection_graph) #, config=config
-        self.sess = tf.Session(graph=self.detection_graph, config=config)
+        self.sess = tf.Session(graph=self.detection_graph) #, config=config
+        #self.sess = tf.Session(graph=self.detection_graph, config=config)
 
 
 
     def get_classification(self, img):
         """Determines the color of the traffic light in the image
-
+        
         Args:
             image (cv::Mat): image containing the traffic light
-
+        
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
-
+        
         """
         #TODO implement light color prediction
         
@@ -86,15 +90,5 @@ class TLClassifier(object):
                     elif class_name == 'yellow':
                         current_light = YELLOW                              
             
-            # Visualization of the results of a detection.
-            vis_util.visualize_boxes_and_labels_on_image_array(img,
-                  boxes,
-                  classes,
-                  scores,
-                  self.category_index,
-                  use_normalized_coordinates=True,
-                  line_thickness=4)
-            
-            self.image_np = img
             
         return current_light
