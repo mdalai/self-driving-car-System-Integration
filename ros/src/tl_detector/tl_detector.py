@@ -12,7 +12,7 @@ import cv2
 import yaml
 from scipy.spatial import KDTree
 
-STATE_COUNT_THRESHOLD = 3
+STATE_COUNT_THRESHOLD = 2 #3
 
 class TLDetector(object):
     def __init__(self):
@@ -42,7 +42,7 @@ class TLDetector(object):
 
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
         # Publish the light state
-        #self.light_state_pub = rospy.Publisher('/traffic_light_state',Int32, queue_size=1)
+        self.light_state_pub = rospy.Publisher('/traffic_light_state',Int32, queue_size=1)
 
         self.bridge = CvBridge()
         self.light_classifier = TLClassifier()
@@ -172,7 +172,8 @@ class TLDetector(object):
             state = self.get_light_state(light)
             # checking
             if state == TrafficLight.RED:
-                rospy.logwarn("MYPRINTING-----State:{} RED".format(state))
+                self.light_state_pub.publish(state)
+                #rospy.logwarn("State:{} RED".format(state))
              
             return light_wp, state
 
