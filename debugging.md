@@ -1,12 +1,12 @@
 
 
-Utils help function files error:
+**1. Utils help function files error**
 
 ```ImportError: No module named utils ```
 
-solution:  I had to get rid of files in this folder, wrote the code directly in the tl_classifier.py.
+**_solution_**:  I had to get rid of files in this folder, wrote the code directly in the tl_classifier.py.
 
-NotFound the .pb file error:
+**2. NotFound the .pb file error**
 
 ```
 core service [/rosout] found
@@ -38,8 +38,10 @@ Traceback (most recent call last):
 tensorflow.python.framework.errors_impl.NotFoundError: frozen_inference_graph2.pb
 ```
 
+**_solution_**:  the .pb file path has to be absolute path. DO NOT use relative path.
 
-tf version error:
+
+**3. tf version mismatch error**
 
 ```
 [ERROR] [1523107062.921475]: bad callback: <bound method TLDetector.image_cb of <__main__.TLDetector object at 0x7fa208d45ed0>>
@@ -83,3 +85,5 @@ InvalidArgumentError (see above for traceback): NodeDef mentions attr 'identical
          [[Node: Preprocessor/map/TensorArray = TensorArrayV3[clear_after_read=true, dtype=DT_FLOAT, dynamic_size=false, element_shape=<unknown>, identical_element_shapes=true, tensor_array_name="", _device="/job:localhost/replica:0/task:0/cpu:0"](Preprocessor/map/strided_slice)]]
 
 ```
+
+**_solution_**:  The fine tuned model has to be exported with TF1.4. Otherwise it throws an error. I trained the model on TF1.7. Then I create a Conda Env that has TF1.4. I exported the .pb file using this Conda Env. 
